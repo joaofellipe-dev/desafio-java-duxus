@@ -1,0 +1,26 @@
+# Compilação e binários gerados pelo Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Arquivos e configurações locais do IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Arquivos do Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Logs e arquivos temporários do sistema operacional
+*.log
+.DS_Store
+Thumbs.db
