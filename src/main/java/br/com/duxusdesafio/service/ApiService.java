@@ -1,5 +1,6 @@
 package br.com.duxusdesafio.service;
 
+import br.com.duxusdesafio.model.ComposicaoTime;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Service que possuirá as regras de negócio para o processamento dos dados
@@ -40,8 +43,56 @@ public class ApiService {
      * dentro do período
      */
     public Integrante integranteMaisUsado(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+        if (timesDoPeriodo.isEmpty()){
+            return null;
+        }
+        Map<Integrante, Integer> contagem = new HashMap<>();
+        for (Time time : timesDoPeriodo) {
+            if (time.getComposicaoTime() != null) {
+                for (ComposicaoTime composicao : time.getComposicaoTime()) {
+                    Integrante integrante = composicao.getIntegrante();
+                    if (integrante != null) {
+                        int totalAtual = contagem.getOrDefault(integrante, 0);
+                        contagem.put(integrante, totalAtual + 1);
+                    }
+                }
+            }
+        }
+        Integrante maisUsado = null;
+        int maiorContagem = 0;
+        for (Map.Entry<Integrante, Integer> entry : contagem.entrySet()) {
+            if (entry.getValue() > maiorContagem) {
+                maiorContagem = entry.getValue();
+                maisUsado = entry.getKey();
+            }
+        }
+
+        return maisUsado;
+    }
+
+    /**
+     * Filtra e retorna apenas os times que jogaram dentro do periodo informado
+     */
+    private List<Time> filtrarTimesPorPeriodo(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
+        List<Time> filtrados = new ArrayList<>();
+
+        for (Time time : todosOsTimes) {
+            if (time == null || time.getData() == null) {
+                continue;
+            }
+
+            LocalDate data = time.getData();
+
+            boolean depoisOuIgualInicial = (dataInicial == null) || !data.isBefore(dataInicial);
+            boolean antesOuIgualFinal = (dataFinal == null) || !data.isAfter(dataFinal);
+
+            if (depoisOuIgualInicial && antesOuIgualFinal) {
+                filtrados.add(time);
+            }
+        }
+
+        return filtrados;
     }
 
     /**
