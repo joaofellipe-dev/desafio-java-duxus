@@ -24,7 +24,14 @@ public class ApiService {
      * Vai retornar um Time, com a composição do time daquela data
      */
     public Time timeDaData(LocalDate data, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
+        if (data == null || todosOsTimes == null) {
+            return null;
+        }
+        for (Time time : todosOsTimes){
+            if(data.equals(time.getData())){
+                return time;
+            }
+        }
         return null;
     }
 
