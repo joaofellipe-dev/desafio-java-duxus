@@ -225,6 +225,7 @@ public class ApiService {
         if (timesDoPeriodo.isEmpty()) {
             return new HashMap<>();
         }
+
         Set<Integrante> integrantesUnicos = new HashSet<>();
         for (Time time : timesDoPeriodo) {
             if (time.getComposicaoTime() != null) {
