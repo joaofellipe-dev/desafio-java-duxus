@@ -6,10 +6,8 @@ import br.com.duxusdesafio.model.Time;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Collection;
 
 /**
  * Service que possuirá as regras de negócio para o processamento dos dados
@@ -100,8 +98,37 @@ public class ApiService {
      * OBS: Time é o clube + composição em determinada data
      */
     public List<String> integrantesDoTimeMaisRecorrente(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        if (todosOsTimes == null || todosOsTimes.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+        if (timesDoPeriodo.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Map<List<String>, Integer> contagemFormacoes = new HashMap<>();
+        for (Time time : timesDoPeriodo) {
+            if (time.getComposicaoTime() != null && !time.getComposicaoTime().isEmpty()) {
+                List<String> nomesIntegrantes = new ArrayList<>();
+                for (ComposicaoTime composicao : time.getComposicaoTime()) {
+                    if (composicao.getIntegrante() != null && composicao.getIntegrante().getNome() != null) {
+                        nomesIntegrantes.add(composicao.getIntegrante().getNome());
+                    }
+                }
+                // Garante que a ordem dos nomes nao altere a identificacao do time
+                Collections.sort(nomesIntegrantes);
+                int totalAtual = contagemFormacoes.getOrDefault(nomesIntegrantes, 0);
+                contagemFormacoes.put(nomesIntegrantes, totalAtual + 1);
+            }
+        }
+        List<String> formacaoMaisRecorrente = new ArrayList<>();
+        int maiorContagem = 0;
+        for (Map.Entry<List<String>, Integer> entry : contagemFormacoes.entrySet()) {
+            if (entry.getValue() > maiorContagem) {
+                maiorContagem = entry.getValue();
+                formacaoMaisRecorrente = entry.getKey();
+            }
+        }
+        return formacaoMaisRecorrente;
     }
 
     /**
