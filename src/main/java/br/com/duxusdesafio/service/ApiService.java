@@ -135,30 +135,31 @@ public class ApiService {
      * Vai retornar a função mais recorrente nos times dentro do período
      */
     public String funcaoMaisRecorrente(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        if(todosOsTimes == null || todosOsTimes.isEmpty()){
+        if (todosOsTimes == null || todosOsTimes.isEmpty()) {
             return null;
         }
-        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial,dataFinal,todosOsTimes);
-        if(timesDoPeriodo.isEmpty()){
+        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+        if (timesDoPeriodo.isEmpty()) {
             return null;
         }
         Map<String, Integer> contagemFuncoes = new HashMap<>();
-        for(Time time: timesDoPeriodo){
-            if(time.getComposicaoTime() != null){
-                for(ComposicaoTime composicao : time.getComposicaoTime()){
+        for (Time time : timesDoPeriodo) {
+            if (time.getComposicaoTime() != null) {
+                for (ComposicaoTime composicao : time.getComposicaoTime()) {
                     Integrante integrante = composicao.getIntegrante();
-                    if (integrante !=null && integrante.getFuncao() != null){
+                    if (integrante != null && integrante.getFuncao() != null) {
                         String funcao = integrante.getFuncao();
-                        int totalAtual = contagemFuncoes.getOrDefault(funcao,0);
+                        int totalAtual = contagemFuncoes.getOrDefault(funcao, 0);
+                        // Contabiliza a frequencia de aparicao de cada funcao no periodo
                         contagemFuncoes.put(funcao, totalAtual + 1);
                     }
                 }
             }
         }
         String maisRecorrente = null;
-        int maiorContagem=0;
-        for(Map.Entry<String, Integer> entry : contagemFuncoes.entrySet()){
-            if(entry.getValue()> maiorContagem){
+        int maiorContagem = 0;
+        for (Map.Entry<String, Integer> entry : contagemFuncoes.entrySet()) {
+            if (entry.getValue() > maiorContagem) {
                 maiorContagem = entry.getValue();
                 maisRecorrente = entry.getKey();
             }
