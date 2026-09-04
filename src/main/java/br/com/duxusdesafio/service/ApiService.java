@@ -225,8 +225,9 @@ public class ApiService {
         if (timesDoPeriodo.isEmpty()) {
             return new HashMap<>();
         }
-
+        //Isola os atletas unicos que jogaram no periodo para evitar contagem duplicada
         Set<Integrante> integrantesUnicos = new HashSet<>();
+
         for (Time time : timesDoPeriodo) {
             if (time.getComposicaoTime() != null) {
                 for (ComposicaoTime composicao : time.getComposicaoTime()) {
@@ -237,6 +238,7 @@ public class ApiService {
             }
         }
         Map<String, Long> contagemFuncoes = new HashMap<>();
+        // Contabiliza a quantidade de integrantes distintos por funcao
         for (Integrante integrante : integrantesUnicos) {
             String funcao = integrante.getFuncao();
             if (funcao != null) {
