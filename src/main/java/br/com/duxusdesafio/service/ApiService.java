@@ -218,8 +218,31 @@ public class ApiService {
      * Dica - pense sobre repetições!
      */
     public Map<String, Long> contagemPorFuncao(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        if (todosOsTimes == null || todosOsTimes.isEmpty()) {
+            return new HashMap<>();
+        }
+        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+        if (timesDoPeriodo.isEmpty()) {
+            return new HashMap<>();
+        }
+        Set<Integrante> integrantesUnicos = new HashSet<>();
+        for (Time time : timesDoPeriodo) {
+            if (time.getComposicaoTime() != null) {
+                for (ComposicaoTime composicao : time.getComposicaoTime()) {
+                    if (composicao.getIntegrante() != null) {
+                        integrantesUnicos.add(composicao.getIntegrante());
+                    }
+                }
+            }
+        }
+        Map<String, Long> contagemFuncoes = new HashMap<>();
+        for (Integrante integrante : integrantesUnicos) {
+            String funcao = integrante.getFuncao();
+            if (funcao != null) {
+                contagemFuncoes.put(funcao, contagemFuncoes.getOrDefault(funcao, 0L) + 1L);
+            }
+        }
+        return contagemFuncoes;
     }
 
 }
