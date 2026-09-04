@@ -247,5 +247,4 @@ public class ApiService {
         }
         return contagemFuncoes;
     }
-
 }
