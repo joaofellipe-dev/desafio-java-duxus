@@ -183,21 +183,17 @@ public class ApiService {
         if (todosOsTimes == null || todosOsTimes.isEmpty()) {
             return new HashMap<>();
         }
-
         List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
         if (timesDoPeriodo.isEmpty()) {
             return new HashMap<>();
         }
-
         Map<String, Long> contagemClubes = new HashMap<>();
-
         for (Time time : timesDoPeriodo) {
             String clube = time.getNomeDoClube();
             if (clube != null) {
                 contagemClubes.put(clube, contagemClubes.getOrDefault(clube, 0L) + 1L);
             }
         }
-
         return contagemClubes;
     }
 
