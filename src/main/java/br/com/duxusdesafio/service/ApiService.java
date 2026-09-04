@@ -185,6 +185,7 @@ public class ApiService {
                 maisRecorrente = entry.getKey();
             }
         }
+
         return maisRecorrente;
     }
 
