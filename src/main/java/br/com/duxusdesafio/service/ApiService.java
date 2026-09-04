@@ -171,8 +171,21 @@ public class ApiService {
      * Vai retornar o nome do Clube mais comum dentro do período
      */
     public String clubeMaisRecorrente(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        // Reaproveita a tabela de frequencia ja calculada e validada
+        Map<String, Long> contagemClubes = contagemDeClubesNoPeriodo(dataInicial, dataFinal, todosOsTimes);
+        if (contagemClubes == null || contagemClubes.isEmpty()) {
+            return null;
+        }
+        String maisRecorrente = null;
+        long maiorContagem = 0L;
+        // Itera sobre o mapa para encontrar a chave com a maior ocorrencia
+        for (Map.Entry<String, Long> entry : contagemClubes.entrySet()) {
+            if (entry.getValue() > maiorContagem) {
+                maiorContagem = entry.getValue();
+                maisRecorrente = entry.getKey();
+            }
+        }
+        return maisRecorrente;
     }
 
 
