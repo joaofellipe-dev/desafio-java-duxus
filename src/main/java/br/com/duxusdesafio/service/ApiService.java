@@ -165,6 +165,7 @@ public class ApiService {
             }
         }
         return maisRecorrente;
+
     }
 
     /**
