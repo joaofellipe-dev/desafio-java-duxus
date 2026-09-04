@@ -165,7 +165,6 @@ public class ApiService {
             }
         }
         return maisRecorrente;
-
     }
 
     /**
@@ -181,8 +180,25 @@ public class ApiService {
      * Vai retornar o número (quantidade) de aparições de cada Clube participante no período
      */
     public Map<String, Long> contagemDeClubesNoPeriodo(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        if (todosOsTimes == null || todosOsTimes.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
+        if (timesDoPeriodo.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        Map<String, Long> contagemClubes = new HashMap<>();
+
+        for (Time time : timesDoPeriodo) {
+            String clube = time.getNomeDoClube();
+            if (clube != null) {
+                contagemClubes.put(clube, contagemClubes.getOrDefault(clube, 0L) + 1L);
+            }
+        }
+
+        return contagemClubes;
     }
 
     /**
