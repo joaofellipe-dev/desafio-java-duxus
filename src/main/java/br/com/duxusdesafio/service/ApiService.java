@@ -156,15 +156,15 @@ public class ApiService {
                 }
             }
         }
-        String maisRecorrente = null;
+        String functMaisRecorrente = null;
         int maiorContagem = 0;
         for (Map.Entry<String, Integer> entry : contagemFuncoes.entrySet()) {
             if (entry.getValue() > maiorContagem) {
                 maiorContagem = entry.getValue();
-                maisRecorrente = entry.getKey();
+                functMaisRecorrente = entry.getKey();
             }
         }
-        return maisRecorrente;
+        return functMaisRecorrente;
     }
 
     /**
@@ -176,17 +176,17 @@ public class ApiService {
         if (contagemClubes == null || contagemClubes.isEmpty()) {
             return null;
         }
-        String maisRecorrente = null;
+        String clubeMaisRecorrente = null;
         long maiorContagem = 0L;
         // Itera sobre o mapa para encontrar a chave com a maior ocorrencia
         for (Map.Entry<String, Long> entry : contagemClubes.entrySet()) {
             if (entry.getValue() > maiorContagem) {
                 maiorContagem = entry.getValue();
-                maisRecorrente = entry.getKey();
+                clubeMaisRecorrente = entry.getKey();
             }
         }
 
-        return maisRecorrente;
+        return clubeMaisRecorrente;
     }
 
 
