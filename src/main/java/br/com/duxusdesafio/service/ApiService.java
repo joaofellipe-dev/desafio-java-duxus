@@ -187,10 +187,12 @@ public class ApiService {
         if (timesDoPeriodo.isEmpty()) {
             return new HashMap<>();
         }
+        //HashMap garante a busca e insercao para a tabela
         Map<String, Long> contagemClubes = new HashMap<>();
         for (Time time : timesDoPeriodo) {
             String clube = time.getNomeDoClube();
             if (clube != null) {
+                //Incrementa a contagem acumulada utilizando Long 0L e 1L
                 contagemClubes.put(clube, contagemClubes.getOrDefault(clube, 0L) + 1L);
             }
         }
