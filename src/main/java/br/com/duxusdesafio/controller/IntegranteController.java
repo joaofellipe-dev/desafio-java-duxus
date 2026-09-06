@@ -6,6 +6,7 @@ import br.com.duxusdesafio.service.IntegranteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/integrantes")
@@ -18,13 +19,12 @@ public class IntegranteController {
     }
     @PostMapping
     public ResponseEntity<Integrante> cadastrar(@RequestBody IntegranteDTO dto) {
-        Integrante integranteSalvo = integranteService.cadastrar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(integranteSalvo);
+        Integrante salvo = integranteService.cadastrar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     @GetMapping
-    public ResponseEntity<List<Integrante>> listarTodos() {
-        List<Integrante> integrantes = integranteService.listarTodos();
-        return ResponseEntity.ok(integrantes);
+    public ResponseEntity <List<Integrante>> listarTodos() {
+        return ResponseEntity.ok(integranteService.listarTodos());
     }
 }
