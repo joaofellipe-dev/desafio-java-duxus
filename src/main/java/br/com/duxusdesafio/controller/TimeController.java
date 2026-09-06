@@ -1,6 +1,7 @@
 package br.com.duxusdesafio.controller;
 
 import br.com.duxusdesafio.dto.TimeRequestDTO;
+import br.com.duxusdesafio.dto.TimeResponseDTO;
 import br.com.duxusdesafio.model.Time;
 import br.com.duxusdesafio.service.TimeService;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class TimeController {
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody TimeRequestDTO dto) {
         try {
-            Time timeSalvo = timeService.cadastrar(dto);
+            TimeResponseDTO timeSalvo = timeService.cadastrar(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(timeSalvo);
         } catch (IllegalArgumentException e) {
             // Captura falhas de validação de negócio e converte em erro semântico de cliente (400)
@@ -43,7 +44,7 @@ public class TimeController {
      * Retorna a listagem completa de times cadastrados.
      */
     @GetMapping
-    public ResponseEntity<List<Time>> listarTodos() {
+    public ResponseEntity<List<TimeResponseDTO>> listarTodos() {
         return ResponseEntity.ok(timeService.listarTodos());
     }
 }

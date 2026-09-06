@@ -1,6 +1,8 @@
 package br.com.duxusdesafio.service;
 
+import br.com.duxusdesafio.dto.ComposicaoResponseDTO;
 import br.com.duxusdesafio.dto.TimeRequestDTO;
+import br.com.duxusdesafio.dto.TimeResponseDTO;
 import br.com.duxusdesafio.model.ComposicaoTime;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
@@ -29,7 +31,7 @@ public class TimeService {
      * Cadastra um time garantindo que todos os atletas referenciados existam.
      * Monta o relacionamento intermediário (ComposicaoTime) antes de salvar em cascata.
      */
-    public Time cadastrar(TimeRequestDTO dto) {
+    public TimeResponseDTO cadastrar(TimeRequestDTO dto) {
         Time time = new Time();
         time.setData(dto.getData());
         time.setNomeDoClube(dto.getNomeDoClube());
@@ -52,10 +54,40 @@ public class TimeService {
         }
 
         time.setComposicaoTime(composicoes);
-        return timeRepository.save(time);
+        Time timeSalvo = timeRepository.save(time);
+
+        return paraResponseDTO(timeSalvo);
+    }
+    public List<TimeResponseDTO> listarTodos() {
+        List<Time> timesDoBanco = timeRepository.findAll();
+        List<TimeResponseDTO> listaResposta = new ArrayList<>();
+
+        // Percorre cada Time do banco e converte para DTO
+        for (Time time : timesDoBanco) {
+            listaResposta.add(paraResponseDTO(time));
+        }
+
+        return listaResposta;
     }
 
-    public List<Time> listarTodos() {
-        return timeRepository.findAll();
+    /**
+     * Converte uma entidade Time para TimeResponseDTO.
+     */
+    private TimeResponseDTO paraResponseDTO(Time time) {
+        TimeResponseDTO dto = new TimeResponseDTO();
+        dto.setId(time.getId());
+        dto.setNomeDoClube(time.getNomeDoClube());
+        dto.setData(time.getData());
+
+        List<ComposicaoResponseDTO> composicoesDTO = new ArrayList<>();
+
+        if (time.getComposicaoTime() != null) {
+            for (ComposicaoTime composicao : time.getComposicaoTime()) {
+                ComposicaoResponseDTO compDTO = new ComposicaoResponseDTO(composicao.getId(), composicao.getIntegrante());
+                composicoesDTO.add(compDTO);
+            }
+        }
+        dto.setComposicaoTime(composicoesDTO);
+        return dto;
     }
 }
