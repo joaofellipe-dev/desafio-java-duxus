@@ -25,8 +25,12 @@ public class TimeService {
     public Time cadastrar(TimeRequestDTO dto) {
         Time time = new Time();
         time.setData(dto.getData());
-
+        time.setNomeDoClube(dto.getNomeDoClube());
         List<Integrante> integrantes = integranteRepository.findAllById(dto.getIntegranteIds());
+
+        if (integrantes.isEmpty() || integrantes.size() != dto.getIntegranteIds().size()) {
+            throw new IllegalArgumentException("Um ou mais IDs de integrantes não foram encontrados no banco.");
+        }
 
         List<ComposicaoTime> composicoes = new ArrayList<>();
         for (Integrante integrante : integrantes) {
@@ -37,10 +41,9 @@ public class TimeService {
         }
 
         time.setComposicaoTime(composicoes);
-
         return timeRepository.save(time);
     }
-public List<Time> listarTodos() {
+    public List<Time> listarTodos() {
     return timeRepository.findAll();
 }
 }

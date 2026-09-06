@@ -4,6 +4,7 @@ import br.com.duxusdesafio.dto.IntegranteDTO;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.repository.IntegranteRepository;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class IntegranteService {
