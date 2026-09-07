@@ -27,6 +27,9 @@ public class ApiController {
         this.timeRepository = timeRepository;
     }
 
+    /**
+     * Busca um time pela data exata e retorna HTTP 200 com os dados formatados ou HTTP 404 caso nao exista
+     */
     @GetMapping("/time-da-data")
     public ResponseEntity<?> timeDaData(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         List<Time> todosOsTimes = timeRepository.findAll();
@@ -47,6 +50,10 @@ public class ApiController {
         return ResponseEntity.ok(dto);
     }
 
+    /**
+     * Busca o integrante mais frequente em um período que e opcional.
+     * HTTP 200 com o integrante ou HTTP 404 caso não haja dados no período.
+     */
     @GetMapping("/integrante-mais-usado")
     public ResponseEntity<?> integranteMaisUsado(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
@@ -79,6 +86,7 @@ public class ApiController {
         List<Time> todosOsTimes = timeRepository.findAll();
         String funcao = apiService.funcaoMaisRecorrente(dataInicial, dataFinal, todosOsTimes);
 
+        // Envelopa o resultado em um Map para padronizar a saída do JSON
         Map<String, String> resposta = new HashMap<>();
         resposta.put("Função", funcao != null ? funcao : "Nenhuma função encontrada");
         return ResponseEntity.ok(resposta);
@@ -106,6 +114,7 @@ public class ApiController {
 
         return ResponseEntity.ok(apiService.contagemDeClubesNoPeriodo(dataInicial, dataFinal, todosOsTimes));
     }
+
     @GetMapping("/contagem-por-funcao")
     public ResponseEntity<?> contagemPorFuncao(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
