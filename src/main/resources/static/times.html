@@ -40,7 +40,7 @@
 </form>
 
 <script>
-    // 1. Carrega os integrantes ao abrir a página
+    // Carrega os integrantes ao abrir a página
     window.onload = async function() {
         try {
             const response = await fetch('/integrantes');
@@ -70,7 +70,7 @@
         }
     };
 
-    // 2. Envia os dados do time ao submeter o formulário
+    // Envia os dados do time ao submeter o formulário
     document.getElementById('form-time').addEventListener('submit', async function(event) {
         event.preventDefault();
 
