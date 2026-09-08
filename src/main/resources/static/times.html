@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Montagem de Times</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], input[type="date"] { padding: 5px; width: 300px; }
+        .checkbox-list { border: 1px solid #ccc; padding: 10px; width: 300px; max-height: 200px; overflow-y: auto; }
+        .checkbox-list label { font-weight: normal; display: inline; }
+        button { padding: 8px 15px; cursor: pointer; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<h2>Montar Escalação do Time</h2>
+
+<form id="form-time">
+    <div class="form-group">
+        <label for="clube">Nome do Clube:</label>
+        <input type="text" id="clube" required>
+    </div>
+
+    <div class="form-group">
+        <label for="data">Data da Escalação:</label>
+        <input type="date" id="data" required>
+    </div>
+
+    <div class="form-group">
+        <label>Selecione os Integrantes:</label>
+        <div id="lista-integrantes" class="checkbox-list">
+            <!-- Os checkboxes vão aparecer aqui via JavaScript -->
+            <p style="margin:0; color: gray;">Carregando integrantes...</p>
+        </div>
+    </div>
+
+    <button type="submit">Salvar Time</button>
+</form>
+
+<script>
+    // 1. Carrega os integrantes ao abrir a página
+    window.onload = async function() {
+        try {
+            const response = await fetch('/integrantes');
+            if (response.ok) {
+                const integrantes = await response.json();
+                const container = document.getElementById('lista-integrantes');
+
+                if (integrantes.length === 0) {
+                    container.innerHTML = '<p style="margin:0; color: red;">Nenhum integrante cadastrado ainda.</p>';
+                    return;
+                }
+
+                container.innerHTML = ''; // Limpa a mensagem de carregando
+
+                // Cria um checkbox para cada integrante retornado pelo banco
+                integrantes.forEach(i => {
+                    container.innerHTML += `
+                        <div style="margin-bottom: 5px;">
+                            <input type="checkbox" name="integranteIds" value="${i.id}" id="int-${i.id}">
+                            <label for="int-${i.id}">${i.nome} - <i>${i.funcao}</i></label>
+                        </div>
+                    `;
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao carregar integrantes:", error);
+        }
+    };
+
+    // 2. Envia os dados do time ao submeter o formulário
+    document.getElementById('form-time').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        // Pega todos os checkboxes que foram marcados
+        const checkboxesMarcados = document.querySelectorAll('input[name="integranteIds"]:checked');
+
+        // Extrai apenas os números (IDs) para um array, ex: [1, 2, 5]
+        const ids = Array.from(checkboxesMarcados).map(cb => parseInt(cb.value));
+
+        if (ids.length === 0) {
+            alert("Selecione pelo menos um integrante para montar o time!");
+            return;
+        }
+
+        const payload = {
+            nomeDoClube: document.getElementById('clube').value,
+            data: document.getElementById('data').value,
+            integranteIds: ids
+        };
+
+        try {
+            const response = await fetch('/times', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert('Time escalado com sucesso!');
+                document.getElementById('form-time').reset();
+            } else {
+                alert('Erro ao salvar o time.');
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert('Erro de conexão com a API.');
+        }
+    });
+</script>
+</body>
+</html>
