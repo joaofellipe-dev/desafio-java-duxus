@@ -33,6 +33,11 @@ Com o projeto rodando, acesse no seu navegador:
   * `201 Created`: Cadastro de novos recursos nas entidades básicas (`POST`).
   * `404 Not Found`: Resposta defensiva quando um recurso pontual não é encontrado na memória para a data ou intervalo informado.
 
+4. **Distinção de Regras de Negócio (Contagem vs. Recorrência):**
+    * Foi identificada a necessidade de separar as lógicas matemáticas de análise:
+    * **`contagemPorFuncao`:** Focada na volume de profissionais. Utiliza a estrutura de dados `Set` para garantir a contagem de **integrantes únicos** por função no período, ignorando repetições do mesmo ID.
+    * **`funcaoMaisRecorrente`:** Focada no uso em campo. Contabiliza o total de **escalações (aparições)** de cada função, permitindo que o mesmo integrante some múltiplos pontos caso participe de vários times.
+
 ---
 
 ## Catálogo de Endpoints Analíticos (`ApiController`)
