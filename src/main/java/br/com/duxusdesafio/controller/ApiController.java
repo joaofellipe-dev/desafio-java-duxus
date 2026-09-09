@@ -79,16 +79,19 @@ public class ApiController {
     }
 
     @GetMapping("/funcao-mais-recorrente")
-    public ResponseEntity<?> funcaoMaisRecorrente(
+    public ResponseEntity<Map<String, String>> funcaoMaisRecorrente(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
 
         List<Time> todosOsTimes = timeRepository.findAll();
+
+        // O Service devolve a String limpa
         String funcao = apiService.funcaoMaisRecorrente(dataInicial, dataFinal, todosOsTimes);
 
-        // Envelopa o resultado em um Map para padronizar a saída do JSON
+        // O Controller monta a caixinha JSON
         Map<String, String> resposta = new HashMap<>();
-        resposta.put("Função", funcao != null ? funcao : "Nenhuma função encontrada");
+        resposta.put("Funcao", funcao);
+
         return ResponseEntity.ok(resposta);
     }
 

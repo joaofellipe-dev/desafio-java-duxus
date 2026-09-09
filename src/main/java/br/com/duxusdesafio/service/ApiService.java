@@ -135,36 +135,33 @@ public class ApiService {
      * Vai retornar a função mais recorrente nos times dentro do período
      */
     public String funcaoMaisRecorrente(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        if (todosOsTimes == null || todosOsTimes.isEmpty()) {
-            return null;
-        }
-        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
-        if (timesDoPeriodo.isEmpty()) {
-            return null;
-        }
-        Map<String, Integer> contagemFuncoes = new HashMap<>();
-        for (Time time : timesDoPeriodo) {
-            if (time.getComposicaoTime() != null) {
+        Map<String, Long> placarDeFuncoes = new HashMap<>();
+
+        for (Time time : todosOsTimes) {
+            LocalDate dataTime = time.getData();
+
+            boolean dentroDoPeriodo = (dataInicial == null || !dataTime.isBefore(dataInicial)) &&
+                    (dataFinal == null || !dataTime.isAfter(dataFinal));
+
+            if (dentroDoPeriodo) {
                 for (ComposicaoTime composicao : time.getComposicaoTime()) {
-                    Integrante integrante = composicao.getIntegrante();
-                    if (integrante != null && integrante.getFuncao() != null) {
-                        String funcao = integrante.getFuncao();
-                        int totalAtual = contagemFuncoes.getOrDefault(funcao, 0);
-                        // Contabiliza a frequencia de aparicao de cada funcao no periodo
-                        contagemFuncoes.put(funcao, totalAtual + 1);
-                    }
+                    String funcao = composicao.getIntegrante().getFuncao();
+                    placarDeFuncoes.put(funcao, placarDeFuncoes.getOrDefault(funcao, 0L) + 1L);
                 }
             }
         }
-        String functMaisRecorrente = null;
-        int maiorContagem = 0;
-        for (Map.Entry<String, Integer> entry : contagemFuncoes.entrySet()) {
-            if (entry.getValue() > maiorContagem) {
-                maiorContagem = entry.getValue();
-                functMaisRecorrente = entry.getKey();
+
+        String funcaoVencedora = ""; // Se não achar nada, devolve vazio
+        long maiorPontuacao = 0L;
+
+        for (Map.Entry<String, Long> entrada : placarDeFuncoes.entrySet()) {
+            if (entrada.getValue() > maiorPontuacao) {
+                maiorPontuacao = entrada.getValue();
+                funcaoVencedora = entrada.getKey();
             }
         }
-        return functMaisRecorrente;
+
+        return funcaoVencedora;
     }
 
     /**
@@ -218,33 +215,37 @@ public class ApiService {
      * Dica - pense sobre repetições!
      */
     public Map<String, Long> contagemPorFuncao(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        if (todosOsTimes == null || todosOsTimes.isEmpty()) {
-            return new HashMap<>();
-        }
-        List<Time> timesDoPeriodo = filtrarTimesPorPeriodo(dataInicial, dataFinal, todosOsTimes);
-        if (timesDoPeriodo.isEmpty()) {
-            return new HashMap<>();
-        }
-        //Isola os atletas unicos que jogaram no periodo para evitar contagem duplicada
-        Set<Integrante> integrantesUnicos = new HashSet<>();
+        // Usamos um Set para guardar os IDs dos integrantes e garantir que não haverá repetição
+        Map<String, Set<Long>> integrantesUnicosPorFuncao = new HashMap<>();
 
-        for (Time time : timesDoPeriodo) {
-            if (time.getComposicaoTime() != null) {
+        for (Time time : todosOsTimes) {
+            LocalDate dataTime = time.getData();
+
+            // Valida se a data do time está dentro do período (aceita null caso não passem data)
+            boolean dentroDoPeriodo = (dataInicial == null || !dataTime.isBefore(dataInicial)) &&
+                    (dataFinal == null || !dataTime.isAfter(dataFinal));
+
+            if (dentroDoPeriodo) {
                 for (ComposicaoTime composicao : time.getComposicaoTime()) {
-                    if (composicao.getIntegrante() != null) {
-                        integrantesUnicos.add(composicao.getIntegrante());
-                    }
+                    String funcao = composicao.getIntegrante().getFuncao();
+                    Long idIntegrante = composicao.getIntegrante().getId();
+
+                    // Se a função ainda não existir no Map, cria uma lista (Set) vazia para ela
+                    integrantesUnicosPorFuncao.putIfAbsent(funcao, new HashSet<>());
+
+                    // Adiciona o ID do integrante (o Set ignora automaticamente se o ID já estiver lá)
+                    integrantesUnicosPorFuncao.get(funcao).add(idIntegrante);
                 }
             }
         }
-        Map<String, Long> contagemFuncoes = new HashMap<>();
-        // Contabiliza a quantidade de integrantes distintos por funcao
-        for (Integrante integrante : integrantesUnicos) {
-            String funcao = integrante.getFuncao();
-            if (funcao != null) {
-                contagemFuncoes.put(funcao, contagemFuncoes.getOrDefault(funcao, 0L) + 1L);
-            }
+
+        // Agora convertemos o Map de Sets para o formato de resposta (Map de Long)
+        Map<String, Long> resultado = new HashMap<>();
+        for (Map.Entry<String, Set<Long>> entry : integrantesUnicosPorFuncao.entrySet()) {
+            // O tamanho do Set é a quantidade exata de pessoas únicas naquela função
+            resultado.put(entry.getKey(), (long) entry.getValue().size());
         }
-        return contagemFuncoes;
+
+        return resultado;
     }
 }
